@@ -1,0 +1,19 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /register                 --> github.com/deepaksinghkushwah/shop-microservices/services/auth-service/internal/handler.Register (3 handlers)
+[GIN-debug] POST   /login                    --> github.com/deepaksinghkushwah/shop-microservices/services/auth-service/internal/handler.Login (3 handlers)
+[GIN-debug] GET    /profile                  --> github.com/deepaksinghkushwah/shop-microservices/services/auth-service/internal/handler.Profile (4 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)
+[GIN-debug] Listening and serving HTTP on :8081
+[GIN] 2026/03/16 - 18:14:17 | 200 | 187.204µs |       127.0.0.1 | GET      "/swagger/index.html"
+[GIN] 2026/03/16 - 18:14:17 | 200 | 33.612µs |       127.0.0.1 | GET      "/swagger/index.css"
+[GIN] 2026/03/16 - 18:14:17 | 200 | 743.688µs |       127.0.0.1 | GET      "/swagger/swagger-ui.css"
+[GIN] 2026/03/16 - 18:14:17 | 200 | 148.81µs |       127.0.0.1 | GET      "/swagger/swagger-ui-standalone-preset.js"
+[GIN] 2026/03/16 - 18:14:17 | 200 | 464.835µs |       127.0.0.1 | GET      "/swagger/swagger-ui-bundle.js"
+[GIN] 2026/03/16 - 18:14:17 | 200 | 25.988µs |       127.0.0.1 | GET      "/swagger/swagger-initializer.js"
+[GIN] 2026/03/16 - 18:14:17 | 200 |  29.08µs |       127.0.0.1 | GET      "/swagger/favicon-32x32.png"
+[GIN] 2026/03/16 - 18:14:17 | 200 | 155.433µs |       127.0.0.1 | GET      "/swagger/doc.json"

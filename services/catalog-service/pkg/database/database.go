@@ -8,11 +8,16 @@ import (
 var DB *gorm.DB
 
 func Connect() error {
-
-	db, err := gorm.Open(sqlite.Open("catalog.db"), &gorm.Config{})
-
+	// Try data directory first (for dist deployment)
+	dbPath := "data/catalog-service/catalog.db"
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
-		return err
+		// Fallback to root (for source tree development)
+		dbPath = "catalog.db"
+		db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+		if err != nil {
+			return err
+		}
 	}
 
 	DB = db
