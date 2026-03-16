@@ -8,11 +8,20 @@ import (
 )
 
 type CreateImageRequest struct {
-	ProductID uint   `json:"product_id"`
-	URL       string `json:"url"`
-	IsPrimary bool   `json:"is_primary"`
+	ProductID uint   `json:"product_id" example:"1"`
+	URL       string `json:"url" example:"https://example.com/image.jpg"`
+	IsPrimary bool   `json:"is_primary" example:"true"`
 }
 
+// CreateProductImage godoc
+// @Summary Create product image
+// @Description Create a new product image
+// @Tags product-images
+// @Accept json
+// @Produce json
+// @Param image body CreateImageRequest true "Product Image Data"
+// @Success 200 {object} map[string]interface{}
+// @Router /product-images [post]
 func CreateProductImage(c *gin.Context) {
 
 	var req CreateImageRequest
@@ -38,6 +47,14 @@ func CreateProductImage(c *gin.Context) {
 	response.Success(c, image)
 }
 
+// ListProductImages godoc
+// @Summary List product images
+// @Description Get all product images
+// @Tags product-images
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /product-images [get]
 func ListProductImages(c *gin.Context) {
 
 	images, err := repository.GetAllProductImages()

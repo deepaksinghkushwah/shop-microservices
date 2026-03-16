@@ -26,6 +26,9 @@ func GetProducts(page int, limit int, categoryID uint) ([]model.Product, int64, 
 
 	err := query.
 		Preload("Images").
+		Preload("Variants").
+		Preload("Variants.Attributes.AttributeValue").
+		Preload("Variants.Attributes.AttributeValue.Attribute").
 		Limit(limit).
 		Offset(offset).
 		Find(&products).Error
@@ -37,7 +40,13 @@ func GetProductBySlug(slug string) (*model.Product, error) {
 
 	var product model.Product
 
-	err := database.DB.Where("slug = ?", slug).First(&product).Error
+	err := database.DB.
+		Preload("Images").
+		Preload("Variants").
+		Preload("Variants.Attributes.AttributeValue").
+		Preload("Variants.Attributes.AttributeValue.Attribute").
+		Where("slug = ?", slug).
+		First(&product).Error
 
 	return &product, err
 }

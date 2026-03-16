@@ -4,23 +4,38 @@ import (
 	"strconv"
 
 	"github.com/deepaksinghkushwah/shop-microservices/pkg/response"
+	"github.com/deepaksinghkushwah/shop-microservices/pkg/validation"
 	"github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type CreateProductRequest struct {
-	Name        string  `json:"name"`
-	Slug        string  `json:"slug"`
+	Name        string  `json:"name" validate:"required,min=3"`
+	Slug        string  `json:"slug" validate:"required"`
 	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	CategoryID  uint    `json:"category_id"`
+	Price       float64 `json:"price" validate:"required,gt=0"`
+	CategoryID  uint    `json:"category_id" validate:"required"`
 }
 
+// CreateProduct godoc
+// @Summary Create product
+// @Description Create a new product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param product body CreateProductRequest true "Product Data"
+// @Success 200 {object} map[string]interface{}
+// @Router /products [post]
 func CreateProduct(c *gin.Context) {
 
 	var req CreateProductRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, "invalid request")
+		return
+	}
+
+	if err := validation.Validate.Struct(req); err != nil {
 		response.Error(c, "invalid request")
 		return
 	}
@@ -41,6 +56,15 @@ func CreateProduct(c *gin.Context) {
 	response.Success(c, product)
 }
 
+// ListProducts godoc
+// @Summary List products
+// @Description Get paginated product list
+// @Tags products
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Page size"
+// @Success 200 {object} map[string]interface{}
+// @Router /products [get]
 func ListProducts(c *gin.Context) {
 
 	page := 1

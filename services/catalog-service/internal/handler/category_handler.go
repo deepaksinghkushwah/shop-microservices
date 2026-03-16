@@ -7,11 +7,20 @@ import (
 )
 
 type CreateCategoryRequest struct {
-	Name     string `json:"name"`
-	Slug     string `json:"slug"`
-	ParentID *uint  `json:"parent_id"`
+	Name     string `json:"name" example:"Electronics"`
+	Slug     string `json:"slug" example:"electronics"`
+	ParentID *uint  `json:"parent_id" example:"1"`
 }
 
+// CreateCategory godoc
+// @Summary Create category
+// @Description Create a new product category
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Param category body CreateCategoryRequest true "Category Data"
+// @Success 200 {object} map[string]interface{}
+// @Router /categories [post]
 func CreateCategory(c *gin.Context) {
 
 	var req CreateCategoryRequest
@@ -31,6 +40,14 @@ func CreateCategory(c *gin.Context) {
 	response.Success(c, category)
 }
 
+// ListCategories godoc
+// @Summary List categories
+// @Description Get all product categories
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /categories [get]
 func ListCategories(c *gin.Context) {
 
 	categories, err := service.ListCategories()
