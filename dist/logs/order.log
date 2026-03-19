@@ -1,23 +1,5 @@
-[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+panic: Binary was compiled with 'CGO_ENABLED=0', go-sqlite3 requires cgo to work. This is a stub
 
-[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
- - using env:	export GIN_MODE=release
- - using code:	gin.SetMode(gin.ReleaseMode)
-
-[GIN-debug] POST   /orders                   --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.CreateOrder (3 handlers)
-[GIN-debug] GET    /orders                   --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.ListUserOrders (3 handlers)
-[GIN-debug] PUT    /orders/:id/status        --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.UpdateOrderStatus (3 handlers)
-[GIN-debug] POST   /order-items              --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.CreateOrderItem (3 handlers)
-[GIN-debug] GET    /order-items/:id          --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.GetOrderItem (3 handlers)
-[GIN-debug] GET    /orders/:order_id/items   --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.ListOrderItems (3 handlers)
-[GIN-debug] PUT    /order-items/:id          --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.UpdateOrderItem (3 handlers)
-[GIN-debug] DELETE /order-items/:id          --> github.com/deepaksinghkushwah/shop-microservices/services/order-service/internal/handler.DeleteOrderItem (3 handlers)
-[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)
-[GIN-debug] Listening and serving HTTP on :8083
-[GIN] 2026/03/16 - 18:13:30 | 200 | 120.275µs |       127.0.0.1 | GET      "/swagger/index.html"
-[GIN] 2026/03/16 - 18:13:30 | 200 | 248.576µs |       127.0.0.1 | GET      "/swagger/swagger-ui.css"
-[GIN] 2026/03/16 - 18:13:30 | 200 |   9.15µs |       127.0.0.1 | GET      "/swagger/index.css"
-[GIN] 2026/03/16 - 18:13:30 | 200 | 984.539µs |       127.0.0.1 | GET      "/swagger/swagger-ui-bundle.js"
-[GIN] 2026/03/16 - 18:13:30 | 200 | 276.858µs |       127.0.0.1 | GET      "/swagger/swagger-ui-standalone-preset.js"
-[GIN] 2026/03/16 - 18:13:30 | 200 | 413.934µs |       127.0.0.1 | GET      "/swagger/swagger-initializer.js"
-[GIN] 2026/03/16 - 18:13:31 | 200 | 113.28µs |       127.0.0.1 | GET      "/swagger/doc.json"
+goroutine 1 [running]:
+main.main()
+	/home/deepak/Projects/shop-microservices/services/order-service/cmd/server/main.go:27 +0x479

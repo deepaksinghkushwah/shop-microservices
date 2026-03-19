@@ -1,0 +1,149 @@
+.
+|-- CLI.md
+|-- FILES_MANIFEST.md
+|-- Makefile
+|-- QUICK_START.sh
+|-- README.md
+|-- SCRIPTS.md
+|-- SETUP_COMPLETE.txt
+|-- auth.db
+|-- build.sh
+|-- catalog.db
+|-- dist
+|   |-- README.md
+|   |-- auth
+|   |-- auth-service_docs
+|   |   |-- docs.go
+|   |   |-- swagger.json
+|   |   `-- swagger.yaml
+|   |-- catalog
+|   |-- catalog-service_docs
+|   |   |-- docs.go
+|   |   |-- swagger.json
+|   |   `-- swagger.yaml
+|   |-- data
+|   |   |-- auth-service
+|   |   |   `-- auth.db
+|   |   |-- catalog-service
+|   |   |   `-- catalog.db
+|   |   `-- order-service
+|   |       `-- order.db
+|   |-- init_db.sh
+|   |-- logs
+|   |   |-- auth.log
+|   |   |-- catalog.log
+|   |   `-- order.log
+|   |-- order
+|   |-- order-service_docs
+|   |   |-- docs.go
+|   |   |-- swagger.json
+|   |   `-- swagger.yaml
+|   |-- start_all.sh
+|   `-- stop_all.sh
+|-- go.mod
+|-- go.sum
+|-- pkg
+|   |-- auth
+|   |   |-- jwt.go
+|   |   `-- middleware.go
+|   |-- config
+|   |   `-- config.go
+|   |-- response
+|   |   `-- response.go
+|   `-- validation
+|       |-- errors.go
+|       `-- validator.go
+|-- services
+|   |-- auth-service
+|   |   |-- auth.db
+|   |   |-- cmd
+|   |   |   `-- server
+|   |   |       `-- main.go
+|   |   |-- docs
+|   |   |   |-- docs.go
+|   |   |   |-- swagger.json
+|   |   |   `-- swagger.yaml
+|   |   |-- internal
+|   |   |   |-- handler
+|   |   |   |   |-- auth_handler.go
+|   |   |   |   `-- auth_handler_test.go
+|   |   |   |-- model
+|   |   |   |   `-- user.go
+|   |   |   |-- repository
+|   |   |   |   `-- user_repository.go
+|   |   |   `-- service
+|   |   |       `-- auth_service.go
+|   |   `-- pkg
+|   |       |-- database
+|   |       |   `-- db.go
+|   |       `-- hash
+|   |           `-- password.go
+|   |-- catalog-service
+|   |   |-- cmd
+|   |   |   `-- server
+|   |   |       `-- main.go
+|   |   |-- docs
+|   |   |   |-- docs.go
+|   |   |   |-- swagger.json
+|   |   |   `-- swagger.yaml
+|   |   |-- internal
+|   |   |   |-- handler
+|   |   |   |   |-- attribute_handler.go
+|   |   |   |   |-- attribute_value_handler.go
+|   |   |   |   |-- catalog_service_test.go
+|   |   |   |   |-- category_handler.go
+|   |   |   |   |-- product_attribute_handler.go
+|   |   |   |   |-- product_handler.go
+|   |   |   |   |-- product_image_handler.go
+|   |   |   |   `-- product_variant_handler.go
+|   |   |   |-- model
+|   |   |   |   |-- attribute.go
+|   |   |   |   |-- attribute_value.go
+|   |   |   |   |-- category.go
+|   |   |   |   |-- product.go
+|   |   |   |   |-- product_attribute.go
+|   |   |   |   |-- product_variant.go
+|   |   |   |   `-- variant_attribute_value.go
+|   |   |   |-- repository
+|   |   |   |   |-- category_repository.go
+|   |   |   |   |-- product_attribute_repository.go
+|   |   |   |   |-- product_image_repository.go
+|   |   |   |   |-- product_repository.go
+|   |   |   |   `-- product_variant_repository.go
+|   |   |   `-- service
+|   |   |       |-- category_service.go
+|   |   |       |-- product_service.go
+|   |   |       `-- product_variant_service.go
+|   |   `-- pkg
+|   |       `-- database
+|   |           `-- database.go
+|   `-- order-service
+|       |-- cmd
+|       |   `-- server
+|       |       `-- main.go
+|       |-- docs
+|       |   |-- docs.go
+|       |   |-- swagger.json
+|       |   `-- swagger.yaml
+|       |-- internal
+|       |   |-- handler
+|       |   |   |-- handler_test.go
+|       |   |   |-- order_handler.go
+|       |   |   `-- orderitem_handler.go
+|       |   |-- model
+|       |   |   |-- order.go
+|       |   |   `-- orderitem.go
+|       |   |-- repository
+|       |   |   |-- order_repository.go
+|       |   |   `-- orderitem_repository.go
+|       |   `-- serivce
+|       |       |-- order_service.go
+|       |       `-- orderitem_service.go
+|       |-- order-service
+|       `-- pkg
+|           `-- database
+|               `-- database.go
+|-- structure.txt
+`-- test.sh
+
+49 directories, 97 files

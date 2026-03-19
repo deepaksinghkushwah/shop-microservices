@@ -1,28 +1,5 @@
-[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+panic: Binary was compiled with 'CGO_ENABLED=0', go-sqlite3 requires cgo to work. This is a stub
 
-[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
- - using env:	export GIN_MODE=release
- - using code:	gin.SetMode(gin.ReleaseMode)
-
-[GIN-debug] POST   /categories               --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.CreateCategory (3 handlers)
-[GIN-debug] GET    /categories               --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.ListCategories (3 handlers)
-[GIN-debug] POST   /products                 --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.CreateProduct (3 handlers)
-[GIN-debug] GET    /products                 --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.ListProducts (3 handlers)
-[GIN-debug] GET    /products/:slug           --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.GetProduct (3 handlers)
-[GIN-debug] POST   /product-images           --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.CreateProductImage (3 handlers)
-[GIN-debug] GET    /product-images           --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.ListProductImages (3 handlers)
-[GIN-debug] POST   /variants                 --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.CreateVariant (3 handlers)
-[GIN-debug] POST   /attributes               --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.CreateAttribute (3 handlers)
-[GIN-debug] GET    /attributes               --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.ListAttributes (3 handlers)
-[GIN-debug] POST   /attributes/:id/values    --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.CreateAttributeValue (3 handlers)
-[GIN-debug] GET    /attributes/:id/values    --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.ListAttributeValues (3 handlers)
-[GIN-debug] POST   /products/:id/attributes  --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.AssignAttributeToProduct (3 handlers)
-[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)
-[GIN-debug] Listening and serving HTTP on :8082
-[GIN] 2026/03/16 - 18:14:08 | 200 | 342.567µs |       127.0.0.1 | GET      "/swagger/index.html"
-[GIN] 2026/03/16 - 18:14:08 | 200 | 160.006µs |       127.0.0.1 | GET      "/swagger/swagger-ui.css"
-[GIN] 2026/03/16 - 18:14:08 | 200 | 405.042µs |       127.0.0.1 | GET      "/swagger/swagger-ui-bundle.js"
-[GIN] 2026/03/16 - 18:14:08 | 200 | 77.385µs |       127.0.0.1 | GET      "/swagger/index.css"
-[GIN] 2026/03/16 - 18:14:08 | 200 | 38.803µs |       127.0.0.1 | GET      "/swagger/swagger-initializer.js"
-[GIN] 2026/03/16 - 18:14:08 | 200 | 173.055µs |       127.0.0.1 | GET      "/swagger/swagger-ui-standalone-preset.js"
-[GIN] 2026/03/16 - 18:14:09 | 200 |   7.49ms |       127.0.0.1 | GET      "/swagger/doc.json"
+goroutine 1 [running]:
+main.main()
+	/home/deepak/Projects/shop-microservices/services/catalog-service/cmd/server/main.go:26 +0x71c
