@@ -19,21 +19,27 @@ if [ -f "./init_db.sh" ]; then
 fi
 
 # Start each service in background
-services=("auth" "catalog" "order")
+services=("auth-service" "catalog-service" "order-service")
 pids=()
 
 for service in "${services[@]}"; do
-    if [ -f "./$service" ]; then
-        echo -e "${GREEN}Starting $service service...${NC}"
-        ./$service > logs/${service}.log 2>&1 &
+    bin_name="${service%-service}"
+    service_dir="./${service}"
+
+    if [ -f "$service_dir/$bin_name" ]; then
+        mkdir -p "$service_dir/logs"
+        echo -e "${GREEN}Starting ${service}...${NC}"
+        pushd "$service_dir" > /dev/null
+        ./$bin_name > "logs/${bin_name}.log" 2>&1 &
         pids+=($!)
+        popd > /dev/null
         sleep 1
     fi
 done
 
 echo ""
 echo -e "${GREEN}All services started with PIDs: ${pids[@]}${NC}"
-echo "Logs available in logs/ directory"
+echo "Logs available in each service's logs/ directory"
 echo ""
 echo "Services:"
 echo "  - Auth Service: http://localhost:8081/swagger"

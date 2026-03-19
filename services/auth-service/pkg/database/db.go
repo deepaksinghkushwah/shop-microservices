@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/deepaksinghkushwah/shop-microservices/pkg/config"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
@@ -10,11 +11,12 @@ import (
 var DB *gorm.DB
 
 func Connect() error {
-	// Try data directory first (for dist deployment)
-	dbPath := "data/auth-service/auth.db"
+	// Allow overriding the DB path via env. Useful for dist builds where each service has its own data directory.
+	dbPath := config.GetEnv("DB_PATH", "data/auth.db")
+
 	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
-		// Fallback to services directory (for source tree development)
+		// Fallback to source tree path (when running from repository root)
 		dbPath = "services/auth-service/auth.db"
 		db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 		if err != nil {

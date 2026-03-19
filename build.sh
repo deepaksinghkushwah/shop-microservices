@@ -69,21 +69,8 @@ print_header "Setting up dist directory"
 mkdir -p "$DIST_DIR"
 print_success "Created dist directory at $DIST_DIR"
 
-# Create database directory
-mkdir -p "$DIST_DIR/data"
-print_success "Created data directory for databases"
-
-# Create migrations directory
-mkdir -p "$DIST_DIR/logs"
-print_success "Created logs directory"
-
-# Copy .env file if it exists
-if [ -f "$SCRIPT_DIR/.env" ]; then
-    cp "$SCRIPT_DIR/.env" "$DIST_DIR/.env"
-    print_success "Copied .env file to dist"
-else
-    print_info "No .env file found in root directory"
-fi
+# Service output directories will be created per service (binary, docs, data, logs)
+# Each service has its own .env file for configuration
 
 failed_builds=()
 successful_builds=()
@@ -100,23 +87,52 @@ for service in "${SERVICES[@]}"; do
 
     service_dir="services/$service"
     binary_name="${service%-service}"
-    output_path="$DIST_DIR/$binary_name"
+    service_dist_dir="$DIST_DIR/$service"
+    output_path="$service_dist_dir/$binary_name"
+
+    # Prepare service dist layout
+    mkdir -p "$service_dist_dir"
+    mkdir -p "$service_dist_dir/data"
+    mkdir -p "$service_dist_dir/logs"
 
     # Build the service
-    if go build -o "$output_path" "$service_dir/cmd/server/main.go"; then
+    if CGO_ENABLED=1 go build -o "$output_path" "$service_dir/cmd/server/main.go"; then
         print_success "Built $service binary: $output_path"
         successful_builds+=("$service")
 
         # Copy service-specific files if they exist
         if [ -d "$service_dir/docs" ]; then
-            mkdir -p "$DIST_DIR/${service}_docs"
-            cp -r "$service_dir/docs"/* "$DIST_DIR/${service}_docs/" 2>/dev/null || true
+            mkdir -p "$service_dist_dir/docs"
+            cp -r "$service_dir/docs"/* "$service_dist_dir/docs/" 2>/dev/null || true
             print_success "Copied API docs for $service"
         fi
 
-        # Create service data directory
-        mkdir -p "$DIST_DIR/data/$service"
-        print_success "Created data directory for $service"
+        # Create service-specific env files (ports + db path)
+        port_var="${binary_name^^}_SERVICE_PORT"
+        case "$service" in
+            auth-service) port_value="8081" ;; 
+            catalog-service) port_value="8082" ;; 
+            order-service) port_value="8083" ;; 
+            *) port_value="8080" ;; 
+        esac
+
+        cat > "$service_dist_dir/.env" <<EOF
+# Environment variables for $service
+# Adjust as needed for your deployment.
+
+$port_var=$port_value
+DB_PATH=data/$binary_name.db
+EOF
+
+        cat > "$service_dist_dir/.env.example" <<EOF
+# Example env for $service
+
+$port_var=$port_value
+DB_PATH=data/$binary_name.db
+EOF
+
+        print_success "Created env files for $service"
+        print_success "Prepared dist layout for $service"
 
     else
         print_error "Failed to build $service"
@@ -133,13 +149,31 @@ cat > "$DIST_DIR/init_db.sh" << 'DBINIT'
 #!/bin/bash
 # Initialize databases with migrations
 
-DATA_DIR="$(dirname "$0")/data"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICES=("auth-service:auth.db" "catalog-service:catalog.db" "order-service:order.db")
 
 for service_db in "${SERVICES[@]}"; do
     IFS=':' read -r service db <<< "$service_db"
-    db_path="$DATA_DIR/$service/$db"
-    
+
+    # Prefer a service-specific DB_PATH from that service's .env file
+    env_file="$SCRIPT_DIR/$service/.env"
+    db_path=""
+
+    if [ -f "$env_file" ]; then
+        db_path=$(grep -m1 '^DB_PATH=' "$env_file" | cut -d'=' -f2-)
+    fi
+
+    # Default to the service data directory if DB_PATH is not set.
+    if [ -z "$db_path" ]; then
+        db_path="$SCRIPT_DIR/$service/data/$db"
+    else
+        # If DB_PATH is a relative path, resolve it relative to the service folder.
+        case "$db_path" in
+            /*) ;; # absolute path already
+            *) db_path="$SCRIPT_DIR/$service/$db_path" ;;
+        esac
+    fi
+
     if [ -f "$db_path" ]; then
         echo "Database already exists: $db_path"
     else
@@ -180,21 +214,27 @@ if [ -f "./init_db.sh" ]; then
 fi
 
 # Start each service in background
-services=("auth" "catalog" "order")
+services=("auth-service" "catalog-service" "order-service")
 pids=()
 
 for service in "${services[@]}"; do
-    if [ -f "./$service" ]; then
-        echo -e "${GREEN}Starting $service service...${NC}"
-        ./$service > logs/${service}.log 2>&1 &
+    bin_name="${service%-service}"
+    service_dir="./${service}"
+
+    if [ -f "$service_dir/$bin_name" ]; then
+        mkdir -p "$service_dir/logs"
+        echo -e "${GREEN}Starting ${service}...${NC}"
+        pushd "$service_dir" > /dev/null
+        ./$bin_name > "logs/${bin_name}.log" 2>&1 &
         pids+=($!)
+        popd > /dev/null
         sleep 1
     fi
 done
 
 echo ""
 echo -e "${GREEN}All services started with PIDs: ${pids[@]}${NC}"
-echo "Logs available in logs/ directory"
+echo "Logs available in each service's logs/ directory"
 echo ""
 echo "Services:"
 echo "  - Auth Service: http://localhost:8081/swagger"
@@ -210,11 +250,38 @@ print_success "Created service startup script"
 # Create stop script
 cat > "$DIST_DIR/stop_all.sh" << 'STOPSCRIPT'
 #!/bin/bash
-# Stop all microservices
+# Stop all microservices by port
 
-pkill -f "^\./auth$" || true
-pkill -f "^\./catalog$" || true
-pkill -f "^\./order$" || true
+# Function to kill process on a given port
+kill_by_port() {
+    local port=$1
+    local service=$2
+    
+    # Find and kill process listening on port
+    if command -v lsof &> /dev/null; then
+        local pid=$(lsof -ti:$port 2>/dev/null)
+        if [ -n "$pid" ]; then
+            kill -9 $pid 2>/dev/null
+            echo "Stopped $service (PID: $pid) listening on port $port"
+        fi
+    else
+        # Fallback: use fuser if lsof is not available
+        if command -v fuser &> /dev/null; then
+            fuser -k $port/tcp 2>/dev/null && echo "Stopped service listening on port $port"
+        else
+            echo "Warning: lsof or fuser not found. Cannot stop service on port $port"
+        fi
+    fi
+}
+
+echo "Stopping all microservices..."
+
+# Kill services by their ports
+kill_by_port 8081 "auth-service"
+kill_by_port 8082 "catalog-service"
+kill_by_port 8083 "order-service"
+
+sleep 1
 
 echo "All services stopped"
 STOPSCRIPT
@@ -226,20 +293,32 @@ print_success "Created service stop script"
 cat > "$DIST_DIR/README.md" << 'README'
 # Microservices Build Output
 
-This directory contains built microservice binaries with initialized databases.
+This directory contains built microservice binaries, API docs, and databases organized per service.
 
 ## Structure
 ```
 dist/
-├── auth              # Auth service binary
-├── catalog           # Catalog service binary
-├── order             # Order service binary
-├── data/             # SQLite databases
-│   ├── auth-service/
-│   ├── catalog-service/
-│   └── order-service/
-├── logs/             # Service logs
-├── *_docs/           # API documentation (Swagger)
+├── auth-service/
+│   ├── auth
+│   ├── docs/
+│   ├── data/
+│   │   └── auth.db
+│   └── logs/
+│       └── auth.log
+├── catalog-service/
+│   ├── catalog
+│   ├── docs/
+│   ├── data/
+│   │   └── catalog.db
+│   └── logs/
+│       └── catalog.log
+├── order-service/
+│   ├── order
+│   ├── docs/
+│   ├── data/
+│   │   └── order.db
+│   └── logs/
+│       └── order.log
 ├── .env              # Environment configuration
 ├── start_all.sh      # Start all services
 ├── stop_all.sh       # Stop all services
@@ -260,9 +339,9 @@ dist/
 
 ### View logs
 ```bash
-tail -f logs/auth.log
-tail -f logs/catalog.log
-tail -f logs/order.log
+tail -f auth-service/logs/auth.log
+tail -f catalog-service/logs/catalog.log
+tail -f order-service/logs/order.log
 ```
 
 ## Service Endpoints
@@ -278,20 +357,33 @@ tail -f logs/order.log
 
 ## Database Files
 
-Databases are SQLite files stored in `data/`:
-- `data/auth-service/auth.db`
-- `data/catalog-service/catalog.db`
-- `data/order-service/order.db`
+Each service uses its own SQLite database under its `data/` directory:
+- `auth-service/data/auth.db`
+- `catalog-service/data/catalog.db`
+- `order-service/data/order.db`
 
 Migrations are automatically run on first service startup.
 
 ## Environment Variables
 
-Configure services using `.env` file in this directory:
+Each service has its own configuration file at `<service>/.env`.
+
+Example (`auth-service/.env`):
 ```
 AUTH_SERVICE_PORT=8081
+DB_PATH=data/auth.db
+```
+
+Example (`catalog-service/.env`):
+```
 CATALOG_SERVICE_PORT=8082
+DB_PATH=data/catalog.db
+```
+
+Example (`order-service/.env`):
+```
 ORDER_SERVICE_PORT=8083
+DB_PATH=data/order.db
 ```
 
 ## Building from Source
@@ -306,24 +398,6 @@ cd ..
 README
 
 print_success "Created dist/README.md"
-
-# Create .env.example if .env doesn't exist in dist
-if [ ! -f "$DIST_DIR/.env" ]; then
-    cat > "$DIST_DIR/.env.example" << 'ENVFILE'
-# Service Ports
-AUTH_SERVICE_PORT=8081
-CATALOG_SERVICE_PORT=8082
-ORDER_SERVICE_PORT=8083
-
-# Database Configuration (if needed)
-# DATABASE_HOST=localhost
-# DATABASE_PORT=5432
-# DATABASE_USER=postgres
-# DATABASE_PASSWORD=password
-ENVFILE
-
-    print_info "Created .env.example - copy to .env and configure if needed"
-fi
 
 # Build summary
 print_header "Build Summary"
@@ -348,9 +422,9 @@ else
     print_success "All services built successfully!"
     echo ""
     echo "Next steps:"
-    echo "  1. Configure environment: cd $DIST_DIR && cp .env.example .env"
+    echo "  1. Configure each service: edit dist/<service>/.env for each service"
     echo "  2. Start services: cd $DIST_DIR && ./start_all.sh"
-    echo "  3. View logs: tail -f $DIST_DIR/logs/*.log"
+    echo "  3. View logs: tail -f $DIST_DIR/<service>/logs/*.log (e.g. $DIST_DIR/auth-service/logs/auth.log)"
     echo ""
     exit 0
 fi

@@ -1,5 +1,0 @@
-panic: Binary was compiled with 'CGO_ENABLED=0', go-sqlite3 requires cgo to work. This is a stub
-
-goroutine 1 [running]:
-main.main()
-	/home/deepak/Projects/shop-microservices/services/auth-service/cmd/server/main.go:26 +0x3f7

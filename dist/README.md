@@ -1,19 +1,31 @@
 # Microservices Build Output
 
-This directory contains built microservice binaries with initialized databases.
+This directory contains built microservice binaries, API docs, and databases organized per service.
 
 ## Structure
 ```
 dist/
-├── auth              # Auth service binary
-├── catalog           # Catalog service binary
-├── order             # Order service binary
-├── data/             # SQLite databases
-│   ├── auth-service/
-│   ├── catalog-service/
-│   └── order-service/
-├── logs/             # Service logs
-├── *_docs/           # API documentation (Swagger)
+├── auth-service/
+│   ├── auth
+│   ├── docs/
+│   ├── data/
+│   │   └── auth.db
+│   └── logs/
+│       └── auth.log
+├── catalog-service/
+│   ├── catalog
+│   ├── docs/
+│   ├── data/
+│   │   └── catalog.db
+│   └── logs/
+│       └── catalog.log
+├── order-service/
+│   ├── order
+│   ├── docs/
+│   ├── data/
+│   │   └── order.db
+│   └── logs/
+│       └── order.log
 ├── .env              # Environment configuration
 ├── start_all.sh      # Start all services
 ├── stop_all.sh       # Stop all services
@@ -34,9 +46,9 @@ dist/
 
 ### View logs
 ```bash
-tail -f logs/auth.log
-tail -f logs/catalog.log
-tail -f logs/order.log
+tail -f auth-service/logs/auth.log
+tail -f catalog-service/logs/catalog.log
+tail -f order-service/logs/order.log
 ```
 
 ## Service Endpoints
@@ -52,20 +64,33 @@ tail -f logs/order.log
 
 ## Database Files
 
-Databases are SQLite files stored in `data/`:
-- `data/auth-service/auth.db`
-- `data/catalog-service/catalog.db`
-- `data/order-service/order.db`
+Each service uses its own SQLite database under its `data/` directory:
+- `auth-service/data/auth.db`
+- `catalog-service/data/catalog.db`
+- `order-service/data/order.db`
 
 Migrations are automatically run on first service startup.
 
 ## Environment Variables
 
-Configure services using `.env` file in this directory:
+Each service has its own configuration file at `<service>/.env`.
+
+Example (`auth-service/.env`):
 ```
 AUTH_SERVICE_PORT=8081
+DB_PATH=data/auth.db
+```
+
+Example (`catalog-service/.env`):
+```
 CATALOG_SERVICE_PORT=8082
+DB_PATH=data/catalog.db
+```
+
+Example (`order-service/.env`):
+```
 ORDER_SERVICE_PORT=8083
+DB_PATH=data/order.db
 ```
 
 ## Building from Source
