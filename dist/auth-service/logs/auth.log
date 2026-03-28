@@ -1,3 +1,4 @@
+2026/03/19 19:08:17 Connected to PostgreSQL
 [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
 
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
@@ -9,12 +10,21 @@
 [GIN-debug] GET    /profile                  --> github.com/deepaksinghkushwah/shop-microservices/services/auth-service/internal/handler.Profile (4 handlers)
 [GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)
 [GIN-debug] Listening and serving HTTP on :8081
-[GIN-debug] redirecting request 301: /swagger/ --> /swagger/
-[GIN] 2026/03/19 - 10:45:47 | 404 | 14.745µs |       127.0.0.1 | GET      "/swagger/"
-[GIN] 2026/03/19 - 10:45:52 | 200 | 93.483µs |       127.0.0.1 | GET      "/swagger/index.html"
-[GIN] 2026/03/19 - 10:45:52 | 200 | 210.266µs |       127.0.0.1 | GET      "/swagger/swagger-ui.css"
-[GIN] 2026/03/19 - 10:45:52 | 200 | 19.676µs |       127.0.0.1 | GET      "/swagger/index.css"
-[GIN] 2026/03/19 - 10:45:52 | 200 |   2.18ms |       127.0.0.1 | GET      "/swagger/swagger-ui-standalone-preset.js"
-[GIN] 2026/03/19 - 10:45:52 | 200 |   2.42ms |       127.0.0.1 | GET      "/swagger/swagger-ui-bundle.js"
-[GIN] 2026/03/19 - 10:45:52 | 200 | 25.297µs |       127.0.0.1 | GET      "/swagger/swagger-initializer.js"
-[GIN] 2026/03/19 - 10:45:52 | 200 | 665.295µs |       127.0.0.1 | GET      "/swagger/doc.json"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 287.363µs |             ::1 | GET      "/swagger/index.html"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 173.997µs |             ::1 | GET      "/swagger/swagger-ui.css"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 29.586µs |             ::1 | GET      "/swagger/index.css"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 43.235µs |             ::1 | GET      "/swagger/swagger-initializer.js"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 408.885µs |             ::1 | GET      "/swagger/swagger-ui-bundle.js"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 197.553µs |             ::1 | GET      "/swagger/swagger-ui-standalone-preset.js"
+[GIN] 2026/03/19 - 19:08:26 | 200 | 404.735µs |             ::1 | GET      "/swagger/doc.json"
+[GIN] 2026/03/19 - 19:08:29 | 200 | 38.382µs |             ::1 | GET      "/swagger/index.html"
+[GIN] 2026/03/19 - 19:08:29 | 304 | 26.169µs |             ::1 | GET      "/swagger/swagger-ui.css"
+[GIN] 2026/03/19 - 19:08:29 | 200 | 11.613µs |             ::1 | GET      "/swagger/index.css"
+[GIN] 2026/03/19 - 19:08:29 | 200 | 18.588µs |             ::1 | GET      "/swagger/swagger-initializer.js"
+[GIN] 2026/03/19 - 19:08:29 | 304 | 14.608µs |             ::1 | GET      "/swagger/swagger-ui-bundle.js"
+[GIN] 2026/03/19 - 19:08:29 | 304 | 13.874µs |             ::1 | GET      "/swagger/swagger-ui-standalone-preset.js"
+[GIN] 2026/03/19 - 19:08:29 | 200 | 172.365µs |             ::1 | GET      "/swagger/doc.json"
+[GIN] 2026/03/19 - 19:08:29 | 200 | 29.335µs |             ::1 | GET      "/swagger/favicon-32x32.png"
+[GIN] 2026/03/19 - 19:09:00 | 200 | 861.09ms |             ::1 | POST     "/register"
+[GIN] 2026/03/19 - 19:09:32 | 200 | 855.34ms |             ::1 | POST     "/login"
+[GIN] 2026/03/19 - 19:09:59 | 401 | 30.858µs |             ::1 | GET      "/profile"

@@ -1,0 +1,47 @@
+# .dockerignore
+
+# Git
+.git
+.gitignore
+
+# Build artifacts
+dist/
+build/
+*.o
+*.a
+
+# Dependencies
+vendor/
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+
+# Test files
+*_test.go
+*.test
+coverage/
+
+# Temporary files
+tmp/
+temp/

@@ -1,29 +1,44 @@
 package database
 
 import (
-	"github.com/deepaksinghkushwah/shop-microservices/pkg/config"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"fmt"
+	"log"
 
-	_ "modernc.org/sqlite"
+	"github.com/deepaksinghkushwah/shop-microservices/pkg/config"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
 func Connect() error {
-	// Allow overriding the DB path via env. Useful for dist builds where each service has its own data directory.
-	dbPath := config.GetEnv("DB_PATH", "data/order.db")
+	host := config.GetEnv("DB_HOST", "localhost")
+	port := config.GetEnv("DB_PORT", "5432")
+	user := config.GetEnv("DB_USER", "postgres")
+	password := config.GetEnv("DB_PASSWORD", "password")
+	dbname := config.GetEnv("DB_NAME", "order")
+	sslmode := config.GetEnv("DB_SSLMODE", "disable")
 
-	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		host, user, password, dbname, port, sslmode,
+	)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		// Fallback to root (for source tree development)
-		dbPath = "order.db"
-		db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
-		if err != nil {
-			return err
-		}
+		return err
 	}
 
+	sqlDB, err := db.DB()
+	if err != nil {
+		return err
+	}
+
+	// Optional: connection pool tuning
+	sqlDB.SetMaxOpenConns(25)
+	sqlDB.SetMaxIdleConns(10)
+
 	DB = db
+	log.Println("Connected to PostgreSQL")
 	return nil
 }

@@ -1,3 +1,4 @@
+2026/03/19 19:08:18 Connected to PostgreSQL
 [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
 
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
@@ -19,3 +20,14 @@
 [GIN-debug] POST   /products/:id/attributes  --> github.com/deepaksinghkushwah/shop-microservices/services/catalog-service/internal/handler.AssignAttributeToProduct (3 handlers)
 [GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)
 [GIN-debug] Listening and serving HTTP on :8082
+[GIN-debug] redirecting request 301: /swagger/ --> /swagger/
+[GIN] 2026/03/19 - 19:10:56 | 404 | 570.368µs |       127.0.0.1 | GET      "/swagger/"
+[GIN] 2026/03/19 - 19:11:01 | 200 |   5.14ms |       127.0.0.1 | GET      "/swagger/index.html"
+[GIN] 2026/03/19 - 19:11:01 | 200 | 139.391µs |       127.0.0.1 | GET      "/swagger/swagger-ui.css"
+[GIN] 2026/03/19 - 19:11:01 | 200 | 24.817µs |       127.0.0.1 | GET      "/swagger/index.css"
+[GIN] 2026/03/19 - 19:11:01 | 200 | 551.468µs |       127.0.0.1 | GET      "/swagger/swagger-ui-bundle.js"
+[GIN] 2026/03/19 - 19:11:01 | 200 |   1.02ms |       127.0.0.1 | GET      "/swagger/swagger-ui-standalone-preset.js"
+[GIN] 2026/03/19 - 19:11:01 | 200 | 28.426µs |       127.0.0.1 | GET      "/swagger/swagger-initializer.js"
+[GIN] 2026/03/19 - 19:11:01 | 200 |   1.37ms |       127.0.0.1 | GET      "/swagger/doc.json"
+[GIN] 2026/03/19 - 19:11:32 | 200 |   8.29ms |       127.0.0.1 | GET      "/attributes"
+[GIN] 2026/03/19 - 19:11:48 | 201 |   8.38ms |       127.0.0.1 | POST     "/attributes"

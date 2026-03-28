@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  # Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: shop-auth-service
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: auth
+      DB_SSLMODE: disable
+      AUTH_SERVICE_PORT: 8081
+    ports:
+      - "8081:8081"
+    extra_hosts:
+      - "postgres:host-gateway"
+    network_mode: bridge
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Catalog Service
+  catalog-service:
+    build:
+      context: .
+      dockerfile: services/catalog-service/Dockerfile
+    container_name: shop-catalog-service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: catalog
+      DB_SSLMODE: disable
+      CATALOG_SERVICE_PORT: 8082
+    ports:
+      - "8082:8082"
+    extra_hosts:
+      - "postgres:host-gateway"
+    network_mode: bridge
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Order Service
+  order-service:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    container_name: shop-order-service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: order
+      DB_SSLMODE: disable
+      ORDER_SERVICE_PORT: 8083
+    ports:
+      - "8083:8083"
+    extra_hosts:
+      - "postgres:host-gateway"
+    network_mode: bridge
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8083/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
