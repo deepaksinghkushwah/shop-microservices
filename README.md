@@ -10,3 +10,6 @@ swag init -g cmd/server/main.go
 
 cd services/order-service
 swag init -g cmd/server/main.go
+
+
+docker compose up --build -d

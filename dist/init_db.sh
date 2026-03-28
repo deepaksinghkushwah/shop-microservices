@@ -1,38 +1,21 @@
 #!/bin/bash
-# Initialize databases with migrations
+# Initialize PostgreSQL databases for microservices
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SERVICES=("auth-service:auth.db" "catalog-service:catalog.db" "order-service:order.db")
+# Database credentials from .env
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+DB_USER="${DB_USER:-postgres}"
+DB_PASSWORD="${DB_PASSWORD:-password}"
 
-for service_db in "${SERVICES[@]}"; do
-    IFS=':' read -r service db <<< "$service_db"
+export PGPASSWORD="$DB_PASSWORD"
 
-    # Prefer a service-specific DB_PATH from that service's .env file
-    env_file="$SCRIPT_DIR/$service/.env"
-    db_path=""
+echo "Initializing PostgreSQL databases..."
 
-    if [ -f "$env_file" ]; then
-        db_path=$(grep -m1 '^DB_PATH=' "$env_file" | cut -d'=' -f2-)
-    fi
-
-    # Default to the service data directory if DB_PATH is not set.
-    if [ -z "$db_path" ]; then
-        db_path="$SCRIPT_DIR/$service/data/$db"
-    else
-        # If DB_PATH is a relative path, resolve it relative to the service folder.
-        case "$db_path" in
-            /*) ;; # absolute path already
-            *) db_path="$SCRIPT_DIR/$service/$db_path" ;;
-        esac
-    fi
-
-    if [ -f "$db_path" ]; then
-        echo "Database already exists: $db_path"
-    else
-        echo "Creating database: $db_path"
-        mkdir -p "$(dirname "$db_path")"
-        touch "$db_path"
-    fi
+# Create databases
+for db_name in auth catalog order; do
+    echo "Creating database: $db_name"
+    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -tc "SELECT 1 FROM pg_database WHERE datname = '$db_name'" | grep -q 1 || \
+    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -c "CREATE DATABASE $db_name"
 done
 
 echo "Database initialization complete"

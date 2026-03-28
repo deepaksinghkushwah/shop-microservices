@@ -226,6 +226,13 @@ DBINIT
     print_success "Created database initialization script"
 }
 
-# Exit after build
-exit 0
+# Main execution logic
+if [ "$DOCKER_BUILD" = true ]; then
+    build_docker_images
+else
+    build_local_binaries
+fi
+
+print_header "Build Complete!"
+print_success "All services built successfully"
 

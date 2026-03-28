@@ -1,8 +1,0 @@
-
-2026/03/19 19:08:19 [35m/home/deepak/Projects/shop-microservices/services/order-service/pkg/database/database.go:27
-[0m[31m[error] [0mfailed to initialize database, got error failed to connect to `user=postgres database=order`: [::1]:5432 (localhost): server error: FATAL: database "order" does not exist (SQLSTATE 3D000)
-panic: failed to connect to `user=postgres database=order`: [::1]:5432 (localhost): server error: FATAL: database "order" does not exist (SQLSTATE 3D000)
-
-goroutine 1 [running]:
-main.main()
-	/home/deepak/Projects/shop-microservices/services/order-service/cmd/server/main.go:27 +0x479

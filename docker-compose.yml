@@ -1,6 +1,28 @@
-version: '3.9'
+version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: shop-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   # Auth Service
   auth-service:
     build:
@@ -18,9 +40,11 @@ services:
       AUTH_SERVICE_PORT: 8081
     ports:
       - "8081:8081"
-    extra_hosts:
-      - "postgres:host-gateway"
-    network_mode: bridge
+    networks:
+      - shop-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/health"]
@@ -45,9 +69,11 @@ services:
       CATALOG_SERVICE_PORT: 8082
     ports:
       - "8082:8082"
-    extra_hosts:
-      - "postgres:host-gateway"
-    network_mode: bridge
+    networks:
+      - shop-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/health"]
@@ -72,9 +98,11 @@ services:
       ORDER_SERVICE_PORT: 8083
     ports:
       - "8083:8083"
-    extra_hosts:
-      - "postgres:host-gateway"
-    network_mode: bridge
+    networks:
+      - shop-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8083/health"]
@@ -82,3 +110,10 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
+
+networks:
+  shop-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
