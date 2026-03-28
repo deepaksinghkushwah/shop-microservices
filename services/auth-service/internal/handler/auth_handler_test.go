@@ -2,7 +2,9 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,20 +14,57 @@ import (
 	"github.com/deepaksinghkushwah/shop-microservices/services/auth-service/internal/model"
 	"github.com/deepaksinghkushwah/shop-microservices/services/auth-service/pkg/database"
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/sqlite"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func setupAuthTestApp(t *testing.T) *gin.Engine {
-	// Create an in-memory sqlite DB for isolation
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("failed to open in-memory sqlite: %v", err)
+	// Setup PostgreSQL test container
+	ctx := context.Background()
+	req := testcontainers.ContainerRequest{
+		Image:        "postgres:16-alpine",
+		ExposedPorts: []string{"5432/tcp"},
+		Env: map[string]string{
+			"POSTGRES_USER":     "postgres",
+			"POSTGRES_PASSWORD": "password",
+			"POSTGRES_DB":       "auth_test",
+		},
+		WaitingFor: wait.ForLog("database system is ready to accept connections"),
 	}
 
-	// Make sure the underlying sql.DB is closed when the test ends
-	if sqlDB, err := db.DB(); err == nil {
-		t.Cleanup(func() { _ = sqlDB.Close() })
+	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: req,
+		Started:          true,
+	})
+	if err != nil {
+		t.Fatalf("failed to create test container: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = container.Terminate(ctx)
+	})
+
+	// Get the container's host and port
+	host, err := container.Host(ctx)
+	if err != nil {
+		t.Fatalf("failed to get container host: %v", err)
+	}
+
+	port, err := container.MappedPort(ctx, "5432")
+	if err != nil {
+		t.Fatalf("failed to get container port: %v", err)
+	}
+
+	// Create connection string
+	dsn := fmt.Sprintf("host=%s port=%s user=postgres password=password dbname=auth_test sslmode=disable",
+		host, port.Port())
+
+	// Connect to database
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect to test database: %v", err)
 	}
 
 	// Use this DB for the app

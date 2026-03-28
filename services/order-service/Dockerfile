@@ -7,7 +7,7 @@ WORKDIR /build
 ENV GOTOOLCHAIN=auto
 
 # Install build dependencies
-RUN apk add --no-cache git gcc musl-dev sqlite-dev
+RUN apk add --no-cache git gcc musl-dev
 
 # Copy go mod files from root
 COPY go.mod go.sum ./
